@@ -18,8 +18,9 @@ public class NodeFactory {
      * @param jsd
      * @return
      */
-    public String createMainNodes(JSONObject jsd){
-        return jsd.toString();
+    public List<Node> createMainNodes(JSONObject jsd){
+        this.createNodes(jsd);
+        return this.nodes;
     }
 
     /**
@@ -27,8 +28,9 @@ public class NodeFactory {
      * @param jsd
      * @return
      */
-    public String createMainNodes(JSONArray jsd){
-        return jsd.toString();
+    public List<Node> createMainNodes(JSONArray jsd){
+        this.createNodes(jsd);
+        return this.nodes;
     }
 
     /**
@@ -65,21 +67,28 @@ public class NodeFactory {
     }
     public List<Node> getNodes(JSONObject jsd){
         List<Node> nodes = new ArrayList<>();
-        if(jsd == null){
+        JSONArray keys = jsd.names();
+        if(jsd == null || keys == null){
             return nodes;
         }
-        JSONArray keys = jsd.names();
+
         for(Object k: keys){
             String key = (String)k;
-            String value = jsd.getString(key);
+            Object value = jsd.get(key);
 
             if(this.attributeFactory.isFieldRepresentingAttributes(key)){
                 continue;
             }
 
             Node node = new Node(key);
-            node.addChildren(this.getNodes(value));
-            this.attributeFactory.setAttributes(node,value);
+            if(value instanceof JSONObject){
+                node.addChildren(this.getNodes((JSONObject)value));
+            }
+            else if(value instanceof JSONArray){
+                node.addChildren(this.getNodes((JSONArray)value));
+            }
+
+            this.attributeFactory.setAttributes(node);
             nodes.add(node);
         }
         return new ArrayList<>();

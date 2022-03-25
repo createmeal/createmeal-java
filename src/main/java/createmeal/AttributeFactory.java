@@ -36,7 +36,7 @@ public class AttributeFactory {
     public boolean isAttribute(String key) {
         return this.attributes.has(key) && !this.tags.has(key);
     }
-    public void setAttributes(Node node,String value){
+    public void setAttributes(Node node){
 
     }
 }

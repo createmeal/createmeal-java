@@ -3,6 +3,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Document {
     private NodeFactory nodeFactory;
     public Document (){
@@ -15,13 +18,30 @@ public class Document {
      * @return
      */
     public String toHtml(String jsd){
+        List<Node> nodes = new ArrayList<>();
         if(isJSONArray(jsd)){
-            return this.nodeFactory.createMainNodes(toJSONArray(jsd));
+            nodes.addAll(this.nodeFactory.createMainNodes(toJSONArray(jsd)));
         }
         else if(isJSONObject(jsd)){
-            return this.nodeFactory.createMainNodes(toJSONObject(jsd));
+            nodes.addAll(this.nodeFactory.createMainNodes(toJSONObject(jsd)));
         }
+        String html = getString(nodes);
+        if (html != null) return html;
         return jsd;
+    }
+
+    private String getString(List<Node> nodes) {
+        if(nodes.size()>0){
+            List<String> html = new ArrayList<>();
+            for(Object n: nodes){
+                if(n instanceof Node){
+                    Node node = (Node)n;
+                    html.add(node.toHtml());
+                }
+                return String.join("", html);
+            }
+        }
+        return null;
     }
 
     /**
@@ -30,7 +50,10 @@ public class Document {
      * @return
      */
     public String toHtml(JSONObject jsd){
-        return this.nodeFactory.createMainNodes(jsd);
+        List<Node> nodes = this.nodeFactory.createMainNodes(jsd);
+        String html = getString(nodes);
+        if (html != null) return html;
+        return jsd.toString();
     }
 
     /**
@@ -39,7 +62,10 @@ public class Document {
      * @return
      */
     public String toHtml(JSONArray jsd){
-        return this.nodeFactory.createMainNodes(jsd);
+        List<Node> nodes = this.nodeFactory.createMainNodes(jsd);
+        String html = getString(nodes);
+        if (html != null) return html;
+        return jsd.toString();
     }
     private static JSONObject toJSONObject(String jsd){
         try {

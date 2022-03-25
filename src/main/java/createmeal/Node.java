@@ -1,5 +1,6 @@
 package createmeal;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,10 +11,14 @@ public class Node {
 
     public Node(String name) {
         this.name = name;
+        this.children = new ArrayList<>();
+        this.attributes = new ArrayList<>();
     }
 
     public void addChildren(List<Node> children) {
-        this.children.addAll(children);
+        if(children != null){
+            this.children.addAll(children);
+        }
     }
 
     public void setAttribute(String key, String value) {
