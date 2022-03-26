@@ -62,7 +62,7 @@ public class NodeFactory {
     }
     public List<Node> getNodes(String jsd){
         List<Node> nodes = new ArrayList<>();
-        nodes.add(new Node(jsd));
+        nodes.add(new Node(jsd,"string"));
         return nodes;
     }
     public List<Node> getNodes(JSONObject jsd){
@@ -81,7 +81,10 @@ public class NodeFactory {
             }
 
             Node node = new Node(key);
-            if(value instanceof JSONObject){
+            if(value instanceof String){
+                node.addChildren(this.getNodes((String)value));
+            }
+            else if(value instanceof JSONObject){
                 node.addChildren(this.getNodes((JSONObject)value));
             }
             else if(value instanceof JSONArray){
@@ -91,7 +94,7 @@ public class NodeFactory {
             this.attributeFactory.setAttributes(node);
             nodes.add(node);
         }
-        return new ArrayList<>();
+        return nodes;
     }
     public List<Node> getNodes(JSONArray jsd){
         List<Node> nodes = new ArrayList<>();

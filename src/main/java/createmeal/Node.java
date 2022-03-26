@@ -8,9 +8,16 @@ public class Node {
     List<String> attributes;
     List<Node> children;
     String name;
+    String type;
 
     public Node(String name) {
         this.name = name;
+        this.children = new ArrayList<>();
+        this.attributes = new ArrayList<>();
+    }
+    public Node(String name,String type){
+        this.name = name;
+        this.type = type;
         this.children = new ArrayList<>();
         this.attributes = new ArrayList<>();
     }
@@ -33,6 +40,9 @@ public class Node {
     }
 
     public String getOpenTag() {
+        if(this.type == "string"){
+            return this.name;
+        }
         if (this.attributes.size() > 0) {
             return String.format("<%s %s>", this.name, this.getAttributes());
         }
@@ -40,7 +50,7 @@ public class Node {
     }
 
     public String getCloseTag() {
-        if(this.isSelfClosingTag()){
+        if(this.isSelfClosingTag() || this.type == "string"){
             return "";
         }
         return String.format("</%s>", this.name);
@@ -48,7 +58,7 @@ public class Node {
 
     public String toHtml() {
         List<String> htmlChildren = this.children.stream().map(child -> child.toHtml()).collect(Collectors.toList());
-        return this.getOpenTag() + String.join(",", htmlChildren) + this.getCloseTag();
+        return this.getOpenTag() + String.join("", htmlChildren) + this.getCloseTag();
     }
     public boolean isSelfClosingTag(){
         return false;
